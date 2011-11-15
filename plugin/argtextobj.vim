@@ -168,7 +168,10 @@ endfunction
 
 function! s:GetInnerText(r1, r2)
   let pos_save = getpos('.')
+  let cb_save = &clipboard
+  set clipboard= " Avoid clobbering the selection and clipboard registers.
   let reg_save = @@
+  let regtype_save = getregtype('"')
   call setpos('.', a:r1)
   normal! lv
   call setpos('.', a:r2)
@@ -178,7 +181,8 @@ function! s:GetInnerText(r1, r2)
   normal! y
   let val = @@
   call setpos('.', pos_save)
-  let @@ = reg_save
+  call setreg('"', reg_save, regtype_save)
+  let &clipboard = cb_save
   return val
 endfunction
 
