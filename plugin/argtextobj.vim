@@ -191,11 +191,16 @@ function! s:GetPrevCommaOrBeginArgs(arglist, offset)
   return max([commapos+1, 0])
 endfunction
 
-function! s:GetNextCommaOrEndArgs(arglist, offset)
-  let commapos = stridx(a:arglist, ',', a:offset)
-  if commapos == -1
-    return strlen(a:arglist)-1
-  endif
+function! s:GetNextCommaOrEndArgs(arglist, offset, count)
+  let commapos = a:offset - 1
+  let c = a:count
+  while c > 0
+    let commapos = stridx(a:arglist, ',', commapos + 1)
+    if commapos == -1
+      return strlen(a:arglist)-1
+    endif
+    let c -= 1
+  endwhile
   return commapos-1
 endfunction
 
@@ -227,6 +232,7 @@ function! s:MoveRight(num)
 endfunction
 
 function! s:MotionArgument(inner, visual)
+  let cnt = v:count1
   let current_c = getline('.')[getpos('.')[2]-1]
   if current_c==',' || current_c=='('
     normal! l
@@ -258,7 +264,7 @@ function! s:MotionArgument(inner, visual)
 
   " the beginning/end of this argument
   let thisargbegin = <SID>GetPrevCommaOrBeginArgs(arglist_sub, offset)
-  let thisargend   = <SID>GetNextCommaOrEndArgs(arglist_sub, offset)
+  let thisargend   = <SID>GetNextCommaOrEndArgs(arglist_sub, offset, cnt)
 
   " function(..., the_nth_arg, ...)
   "             [^left]    [^right]
@@ -309,10 +315,10 @@ function! s:MotionArgument(inner, visual)
 endfunction
 
 " maping definition
-vnoremap <silent> ia <ESC>:call <SID>MotionArgument(1, 1)<CR>
-vnoremap <silent> aa <ESC>:call <SID>MotionArgument(0, 1)<CR>
-onoremap <silent> ia :call <SID>MotionArgument(1, 0)<CR>
-onoremap <silent> aa :call <SID>MotionArgument(0, 0)<CR>
+vnoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 1)<CR>
+vnoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 1)<CR>
+onoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 0)<CR>
+onoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 0)<CR>
 
 " option. turn 1 to search the most toplevel function
 let g:argumentobject_force_toplevel = 0
