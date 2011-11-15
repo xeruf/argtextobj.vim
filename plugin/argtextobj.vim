@@ -214,7 +214,7 @@ function! s:MoveToNextNonSpace()
   let oldp = getpos('.')
   let moved = 0
   """echo 'move:' . getline('.')[getpos('.')[2]-1]
-  while getline('.')[getpos('.')[2]-1]==' '
+  while getline('.')[getpos('.')[2]-1]=~'\s'
     normal! l
     if oldp == getpos('.')
       break
