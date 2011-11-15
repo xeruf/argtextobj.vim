@@ -144,6 +144,9 @@ function! s:GetOuterFunctionParenthesis()
   let rightup_before = pos_save
   silent! normal! [(
   let rightup_p = getpos('.')
+  if rightup_p == rightup_before
+    return []
+  endif
   while rightup_p != rightup_before
     if ! g:argumentobject_force_toplevel && getline('.')[getpos('.')[2]-1-1] =~ '[a-zA-Z0-9_]'
       " found a function
@@ -245,17 +248,35 @@ function! s:MotionArgument(inner, visual)
   call <SID>GetOutOfDoubleQuote()
 
   let rightup      = <SID>GetOuterFunctionParenthesis()       " on (
-  if getline('.')[rightup[2]-1]!='('
-    " not in a function declaration nor call
+  if empty(rightup)
+    " no left parenthesis found, not inside function arguments
     execute "normal! \<C-\>\<C-n>\<Esc>" | " Beep.
     return
   endif
   let rightup_pair = <SID>GetPair(rightup)                    " before )
+  if rightup_pair == rightup
+    " no matching right parenthesis found, search for incomplete function
+    " definition until end of current line.
+    let rightup_pair = [0, line('.'), col('$'), 0]
+  endif
   let arglist_str  = <SID>GetInnerText(rightup, rightup_pair) " inside ()
-  let arglist_sub  = arglist_str
-  " cursor offset from rightup
-  let offset  = getpos('.')[2] - rightup[2] - 1 " -1 for the removed parenthesis
+  if getline('.')[rightup[2]-1]=='('
+    " left parenthesis in the current line
+    " cursor offset from rightup
+    let offset  = getpos('.')[2] - rightup[2] - 1 " -1 for the removed parenthesis
+  else
+    " left parenthesis in a previous line; retrieve the (partial when there's a
+    " matching right parenthesis) current line from the arglist_str.
+    for line in split(arglist_str, "\n")
+      if stridx(getline('.'), line) == 0
+        let arglist_str = line
+        break
+      endif
+    endfor
+    let offset  = getpos('.')[2] - 1
+  endif
   " replace all parentheses and commas inside them to '_'
+  let arglist_sub  = arglist_str
   let arglist_sub = substitute(arglist_sub, "'".'\([^'."'".']\{-}\)'."'", '\="(".substitute(submatch(1), ".", "_", "g").")"', 'g') " replace '..' => (__)
   let arglist_sub = substitute(arglist_sub, '\[\([^'."'".']\{-}\)\]', '\="(".substitute(submatch(1), ".", "_", "g").")"', 'g')     " replace [..] => (__)
   let arglist_sub = substitute(arglist_sub, '<\([^'."'".']\{-}\)>', '\="(".substitute(submatch(1), ".", "_", "g").")"', 'g')       " replace <..> => (__)
@@ -277,7 +298,7 @@ function! s:MotionArgument(inner, visual)
 
   """echo 'on(='. rightup[2] . ' before)=' . rightup_pair[2]
   """echo arglist_str
-  """echo arglist_sub
+  """echo arglist_sub strlen(arglist_sub)
   """echo offset
   """echo 'argbegin='. thisargbegin . '  argend='. thisargend
   """echo 'left=' . left . '  right='. right
