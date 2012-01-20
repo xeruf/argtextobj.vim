@@ -340,8 +340,8 @@ function! s:MotionArgument(inner, visual)
 endfunction
 
 " maping definition
-vnoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 1)<CR>
-vnoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 1)<CR>
+xnoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 1)<CR>
+xnoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 1)<CR>
 onoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 0)<CR>
 onoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 0)<CR>
 
