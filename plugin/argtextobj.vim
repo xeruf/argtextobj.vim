@@ -94,10 +94,10 @@
 " }}}1
 "=============================================================================
 
-"if exists('loaded_argtextobj') || v:version < 701
-"  finish
-"endif
-"let loaded_argtextobj = 1
+if exists('loaded_argtextobj') || &cp || version < 700
+  finish
+endif
+let loaded_argtextobj = 1
 
 function! s:GetOutOfDoubleQuote()
   " get out of double quoteed string (one letter before the beginning)
