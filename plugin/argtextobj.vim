@@ -339,13 +339,19 @@ function! s:MotionArgument(inner, visual)
   endif
 endfunction
 
-" maping definition
-xnoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 1)<CR>
-xnoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 1)<CR>
-onoremap <silent> ia :<C-U>call <SID>MotionArgument(1, 0)<CR>
-onoremap <silent> aa :<C-U>call <SID>MotionArgument(0, 0)<CR>
-
 " option. turn 1 to search the most toplevel function
-let g:argumentobject_force_toplevel = 0
+let g:argumentobject_force_toplevel =
+  \ get(g:, 'argumentobject_force_toplevel', 0)
+
+" option. sets the mapping to use for this textobject
+let g:argumentobject_mapping =
+  \ get(g:, 'argumentobject_mapping', 'a')
+
+" On-demand loading. Let's use the autoload folder and not slow down vim's
+" " startup procedure.
+augroup argtextobjStart
+  autocmd!
+  autocmd VimEnter * call argtextobj#Enable()
+augroup END
 
 " vim: set foldmethod=marker et ts=2 sts=2 sw=2:
