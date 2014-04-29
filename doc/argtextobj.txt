@@ -35,6 +35,15 @@ because it recognizes inclusion relationship of parentheses.
   Descide whether the motion should go out to toplevel function or not in
   nested functions.
 
+                                                          |argtextobj-remap|
+If you want to use different mappings, map your keys to the
+<Plug>(argtextobj...) mapping targets _before_ sourcing the script (e.g. in
+your |vimrc|): >
+  xmap iA <Plug>(argtextobjI)
+  xmap aA <Plug>(argtextobjA)
+  omap iA <Plug>(argtextobjI)
+  omap aA <Plug>(argtextobjA)
+<
 =============================================================================
 3. EXAMPLES ~
                                                         |argtextobj-examples|

@@ -1,13 +1,3 @@
-" maping definition
-function! argtextobj#Enable()
-  if exists('g:argumentobject_mapping')
-    exe 'xnoremap <silent> i'. g:argumentobject_mapping . ' :<C-U>call <SID>MotionArgument(1, 1)<CR>'
-    exe 'xnoremap <silent> a'. g:argumentobject_mapping . ' :<C-U>call <SID>MotionArgument(0, 1)<CR>'
-    exe 'onoremap <silent> i'. g:argumentobject_mapping . ' :<C-U>call <SID>MotionArgument(1, 0)<CR>'
-    exe 'onoremap <silent> a'. g:argumentobject_mapping . ' :<C-U>call <SID>MotionArgument(0, 0)<CR>'
-  endif
-endfunction
-
 function! s:GetOutOfDoubleQuote()
   " get out of double quoteed string (one letter before the beginning)
   let line = getline('.')
@@ -146,7 +136,7 @@ function! s:MoveRight(num)
   endif
 endfunction
 
-function! s:MotionArgument(inner, visual)
+function! argtextobj#MotionArgument(inner, visual)
   let cnt = v:count1
   echo cnt
   let current_c = getline('.')[getpos('.')[2]-1]
