@@ -107,11 +107,21 @@ let g:argumentobject_force_toplevel =
 let g:argumentobject_mapping =
   \ get(g:, 'argumentobject_mapping', 'a')
 
-" On-demand loading. Let's use the autoload folder and not slow down vim's
-" " startup procedure.
-augroup argtextobjStart
-  autocmd!
-  autocmd VimEnter * call argtextobj#Enable()
-augroup END
+vnoremap <silent> <Plug>(argtextobjI) :<C-U>call argtextobj#MotionArgument(1, 1)<CR>
+vnoremap <silent> <Plug>(argtextobjA) :<C-U>call argtextobj#MotionArgument(0, 1)<CR>
+onoremap <silent> <Plug>(argtextobjI) :<C-U>call argtextobj#MotionArgument(1, 0)<CR>
+onoremap <silent> <Plug>(argtextobjA) :<C-U>call argtextobj#MotionArgument(0, 0)<CR>
+if ! hasmapto('<Plug>(argtextobjI)', 'v')
+  xmap ia <Plug>(argtextobjI)
+endif
+if ! hasmapto('<Plug>(argtextobjA)', 'v')
+  xmap aa <Plug>(argtextobjA)
+endif
+if ! hasmapto('<Plug>(argtextobjI)', 'o')
+  omap ia <Plug>(argtextobjI)
+endif
+if ! hasmapto('<Plug>(argtextobjA)', 'o')
+  omap aa <Plug>(argtextobjA)
+endif
 
 " vim: set foldmethod=marker et ts=2 sts=2 sw=2:

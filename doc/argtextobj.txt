@@ -6,7 +6,7 @@
 
 =============================================================================
 1. INTRODUCTION ~
-                                                        |argtextobj-about|
+                                                        *argtextobj-about*
 
 This plugin provides a text-object 'a' (argument). You can
 d(elete), c(hange), v(select)... an argument or inner argument in familiar
@@ -20,7 +20,7 @@ because it recognizes inclusion relationship of parentheses.
 
 =============================================================================
 2. OPTIONS ~
-                                                        |argtextobj-options|
+                                                        *argtextobj-options*
 
 >
   g:argumentobject_mapping
@@ -35,9 +35,18 @@ because it recognizes inclusion relationship of parentheses.
   Descide whether the motion should go out to toplevel function or not in
   nested functions.
 
+                                                          *argtextobj-remap*
+If you want to use different mappings, map your keys to the
+<Plug>(argtextobj...) mapping targets _before_ sourcing the script (e.g. in
+your |vimrc|): >
+  xmap iA <Plug>(argtextobjI)
+  xmap aA <Plug>(argtextobjA)
+  omap iA <Plug>(argtextobjI)
+  omap aA <Plug>(argtextobjA)
+<
 =============================================================================
 3. EXAMPLES ~
-                                                        |argtextobj-examples|
+                                                        *argtextobj-examples*
 
   case1) delete An argument
       function(int arg1,    ch<press 'daa' here>ar* arg2="a,b,c(d,e)")
