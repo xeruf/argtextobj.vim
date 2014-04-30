@@ -196,13 +196,6 @@ function! argtextobj#MotionArgument(inner, visual)
   let left  = offset - thisargbegin
   let right = thisargend - thisargbegin
 
-  """echo 'on(='. rightup[2] . ' before)=' . rightup_pair[2]
-  """echo arglist_str
-  """echo arglist_sub strlen(arglist_sub)
-  """echo offset
-  """echo 'argbegin='. thisargbegin . '  argend='. thisargend
-  """echo 'left=' . left . '  right='. right
-
   let delete_trailing_space = 0
   if a:inner
     " ia
