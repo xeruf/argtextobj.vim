@@ -160,7 +160,7 @@ function! argtextobj#MotionArgument(inner, visual)
     let rightup_pair = [0, line('.'), col('$'), 0]
   endif
   let arglist_str  = <SID>GetInnerText(rightup, rightup_pair) " inside ()
-  if getline('.')[rightup[2]-1]=='('
+  if line('.')==rightup[1]
     " left parenthesis in the current line
     " cursor offset from rightup
     let offset  = getpos('.')[2] - rightup[2] - 1 " -1 for the removed parenthesis
