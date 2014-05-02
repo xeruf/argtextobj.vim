@@ -103,10 +103,6 @@ let loaded_argtextobj = 1
 let g:argumentobject_force_toplevel =
   \ get(g:, 'argumentobject_force_toplevel', 0)
 
-" option. sets the mapping to use for this textobject
-let g:argumentobject_mapping =
-  \ get(g:, 'argumentobject_mapping', 'a')
-
 vnoremap <silent> <Plug>(argtextobjI) :<C-U>call argtextobj#MotionArgument(1, 1)<CR>
 vnoremap <silent> <Plug>(argtextobjA) :<C-U>call argtextobj#MotionArgument(0, 1)<CR>
 onoremap <silent> <Plug>(argtextobjI) :<C-U>call argtextobj#MotionArgument(1, 0)<CR>
