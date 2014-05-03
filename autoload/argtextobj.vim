@@ -161,6 +161,18 @@ function! argtextobj#MotionArgument(inner, visual)
     " no matching right parenthesis found, search for incomplete function
     " definition until end of current line.
     let rightup_pair = [0, line('.'), col('$'), 0]
+  " empty function argument
+  elseif rightup_pair == rightup
+    " select both parenthesis
+    if !a:inner
+      normal! vh
+    elseif !a:visual
+      if current_c == '('
+        " insert single space and visually select it
+        silent! execute "normal! i \<Esc>v"
+      endif
+    endif
+    return
   endif
   let arglist_str  = <SID>GetInnerText(rightup, rightup_pair) " inside ()
   if line('.')==rightup[1]
