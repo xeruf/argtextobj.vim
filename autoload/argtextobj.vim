@@ -64,6 +64,7 @@ function! s:GetPair(pos)
   call setpos('.', a:pos)
   normal! %
   if a:pos == getpos('.')
+    call setpos('.', pos_save)
     return []
   endif
   normal! h
