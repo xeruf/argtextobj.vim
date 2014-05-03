@@ -197,7 +197,8 @@ function! argtextobj#MotionArgument(inner, visual)
   let right = thisargend - thisargbegin
 
   let delete_trailing_space = 0
-  if a:inner
+  " only do inner matching when argument list is not empty
+  if a:inner && arglist_sub !~# "^\s\+$"
     " ia
     call <SID>MoveLeft(left)
     let right -= <SID>MoveToNextNonSpace()
