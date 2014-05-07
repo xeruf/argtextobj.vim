@@ -62,7 +62,12 @@ endfunction
 function! s:GetPair(pos)
   let pos_save = getpos('.')
   call setpos('.', a:pos)
-  normal! %h
+  normal! %
+  if a:pos == getpos('.')
+    call setpos('.', pos_save)
+    return []
+  endif
+  normal! h
   let pair_pos = getpos('.')
   call setpos('.', pos_save)
   return pair_pos
@@ -112,7 +117,6 @@ endfunction
 function! s:MoveToNextNonSpace()
   let oldp = getpos('.')
   let moved = 0
-  """echo 'move:' . getline('.')[getpos('.')[2]-1]
   while getline('.')[getpos('.')[2]-1]=~'\s'
     normal! l
     if oldp == getpos('.')
@@ -138,7 +142,6 @@ endfunction
 
 function! argtextobj#MotionArgument(inner, visual)
   let cnt = v:count1
-  echo cnt
   let current_c = getline('.')[getpos('.')[2]-1]
   if current_c==',' || current_c=='('
     normal! l
@@ -154,10 +157,22 @@ function! argtextobj#MotionArgument(inner, visual)
     return
   endif
   let rightup_pair = <SID>GetPair(rightup)                    " before )
-  if rightup_pair == rightup
+  if empty(rightup_pair)
     " no matching right parenthesis found, search for incomplete function
     " definition until end of current line.
     let rightup_pair = [0, line('.'), col('$'), 0]
+  " empty function argument
+  elseif rightup_pair == rightup
+    " select both parenthesis
+    if !a:inner
+      normal! vh
+    elseif !a:visual
+      if current_c == '('
+        " insert single space and visually select it
+        silent! execute "normal! i \<Esc>v"
+      endif
+    endif
+    return
   endif
   let arglist_str  = <SID>GetInnerText(rightup, rightup_pair) " inside ()
   if line('.')==rightup[1]
@@ -181,12 +196,9 @@ function! argtextobj#MotionArgument(inner, visual)
   let arglist_sub = substitute(arglist_sub, '\[\([^'."'".']\{-}\)\]', '\="(".substitute(submatch(1), ".", "_", "g").")"', 'g')     " replace [..] => (__)
   let arglist_sub = substitute(arglist_sub, '<\([^'."'".']\{-}\)>', '\="(".substitute(submatch(1), ".", "_", "g").")"', 'g')       " replace <..> => (__)
   let arglist_sub = substitute(arglist_sub, '"\([^'."'".']\{-}\)"', '(\1)', 'g') " replace ''..'' => (..)
-  """echo 'transl quotes: ' . arglist_sub
   while stridx(arglist_sub, '(')>=0 && stridx(arglist_sub, ')')>=0
     let arglist_sub = substitute(arglist_sub , '(\([^()]\{-}\))', '\="<".substitute(submatch(1), ",", "_", "g").">"', 'g')
-    """echo 'sub single quot: ' . arglist_sub
   endwhile
-
   " the beginning/end of this argument
   let thisargbegin = <SID>GetPrevCommaOrBeginArgs(arglist_sub, offset)
   let thisargend   = <SID>GetNextCommaOrEndArgs(arglist_sub, offset, cnt)
@@ -197,7 +209,8 @@ function! argtextobj#MotionArgument(inner, visual)
   let right = thisargend - thisargbegin
 
   let delete_trailing_space = 0
-  if a:inner
+  " only do inner matching when argument list is not empty
+  if a:inner && arglist_sub !~# "^\s\+$"
     " ia
     call <SID>MoveLeft(left)
     let right -= <SID>MoveToNextNonSpace()
