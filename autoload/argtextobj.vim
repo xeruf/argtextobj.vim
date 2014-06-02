@@ -142,6 +142,7 @@ endfunction
 
 function! argtextobj#MotionArgument(inner, visual)
   let cnt = v:count1
+  let operator = v:operator
   let current_c = getline('.')[getpos('.')[2]-1]
   if current_c==',' || current_c=='('
     normal! l
@@ -172,7 +173,7 @@ function! argtextobj#MotionArgument(inner, visual)
         silent! execute "normal! i \<Esc>v"
       endif
     endif
-    return
+    return s:Repeat(cnt, a:inner, a:visual, operator)
   endif
   let arglist_str  = <SID>GetInnerText(rightup, rightup_pair) " inside ()
   if line('.')==rightup[1]
@@ -242,6 +243,15 @@ function! argtextobj#MotionArgument(inner, visual)
 
   if &selection ==# 'exclusive'
     normal! l
+  endif
+
+  call s:Repeat(cnt, a:inner, a:visual, operator)
+endfunction
+
+function! s:Repeat(cnt, inner, visual, operator)
+  let l:mapping = (a:inner ? "\<Plug>(argtextobjI)" : "\<Plug>(argtextobjA)")
+  if !a:visual
+    silent! call ingo#motion#omap#repeat(l:mapping, a:operator, a:cnt)
   endif
 endfunction
 
