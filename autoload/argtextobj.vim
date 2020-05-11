@@ -162,7 +162,8 @@ endfunction
 function! argtextobj#MotionArgument(inner, visual)
   let cnt = v:count1
   let operator = v:operator
-  let current_c = getline('.')[getpos('.')[2]-1]
+  let pos_save = getpos('.')
+  let current_c = getline('.')[pos_save[2]-1]
   if current_c==',' || current_c=='('
     normal! l
   endif
@@ -172,8 +173,8 @@ function! argtextobj#MotionArgument(inner, visual)
 
   let rightup      = <SID>GetOuterFunctionParenthesis()       " on (
   if empty(rightup)
-    " no left parenthesis found, not inside function arguments
-    execute "normal! \<C-\>\<C-n>\<Esc>" | " Beep.
+    " no left bracket found, not inside function arguments
+    call setpos('.', pos_save)
     return
   endif
   let rightup_pair = <SID>GetPair(rightup)                    " before )
