@@ -41,13 +41,19 @@ endfunction
 function! s:GetOuterFunctionParenthesis()
   let pos_save = getpos('.')
   let rightup_before = pos_save
-  silent! normal! [(
-  let rightup_p = getpos('.')
+  let markers = ["F<","F[", "[(", "[{"]
+  for marker in markers
+    silent! exe("normal! ".marker)
+    let rightup_p = getpos('.')
+    if rightup_p != rightup_before
+      break
+    endif
+  endfor
   if rightup_p == rightup_before
     return []
   endif
   while rightup_p != rightup_before
-    if ! g:argumentobject_force_toplevel && getline('.')[getpos('.')[2]-1-1] =~ '[a-zA-Z0-9_]'
+    if ! g:argumentobject_force_toplevel
       " found a function
       break
     endif
