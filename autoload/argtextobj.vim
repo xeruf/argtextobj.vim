@@ -41,16 +41,28 @@ endfunction
 function! s:GetOuterFunctionParenthesis()
   let pos_save = getpos('.')
   let rightup_before = pos_save
-  let markers = ["F<","F[", "[(", "[{"]
-  for marker in markers
-    silent! exe("normal! ".marker)
-    let rightup_p = getpos('.')
-    if rightup_p != rightup_before
-      break
-    endif
+
+  let pos_char = getline('.')[pos_save[2]] 
+  let split = split(&matchpairs, ':')[1:]
+  let closing = split[-1]
+  let split = split[:-1]
+  for sp in split
+    let closing = closing.split(sp, ',')[0]
   endfor
+  echo closing
+
+ silent! normal! %
+  if ! pos_char =~ '['.closing.']'
+    silent! normal! %
+  endif
+
+  let rightup_p = getpos('.')
   if rightup_p == rightup_before
-    return []
+    silent! normal! [(
+    let rightup_p = getpos('.')
+    if rightup_p == rightup_before
+      return []
+    endif
   endif
   while rightup_p != rightup_before
     if ! g:argumentobject_force_toplevel
@@ -61,6 +73,7 @@ function! s:GetOuterFunctionParenthesis()
     silent! normal! [(
     let rightup_p = getpos('.')
   endwhile
+
   call setpos('.', pos_save)
   return rightup_p
 endfunction
