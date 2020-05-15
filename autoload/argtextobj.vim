@@ -2,46 +2,6 @@ function! s:CurChar()
     return getline('.')[getpos('.')[2] - 1]
 endfunction
 
-function! s:GetOutOfDoubleQuote()
-  " get out of double quoted string (one letter before the beginning)
-  let line = getline('.')
-  let pos_save = getpos('.')
-  let mark_b = getpos("'<")
-  let mark_e = getpos("'>")
-  let repl='_'
-  let did_modify = 0
-  if <SID>CurChar()=='_'
-    let repl='?'
-  endif
-
-  while 1
-    exe 'silent! normal! ^va"'
-    normal! :\<ESC>\<CR>
-    if getpos("'<")==getpos("'>")
-      break
-    endif
-    exe 'normal! gvr' . repl
-    let did_modify = 1
-  endwhile
-
-  call setpos('.', pos_save)
-  if <SID>CurChar()==repl
-    " in double quote
-    if did_modify
-      silent undo
-      call setpos('.', pos_save)
-    endif
-    if getpos('.')==getpos("'<")
-      normal! h
-    else
-      normal! F"
-    endif
-  elseif did_modify
-    silent undo
-    call setpos('.', pos_save)
-  endif
-endfunction
-
 function! s:GetOuterFunctionParenthesis()
   let pos_save = getpos('.')
   let rightup_before = pos_save
@@ -57,20 +17,11 @@ function! s:GetOuterFunctionParenthesis()
     normal! l
     return pos_save
   endif
-  silent! normal! %
-  let pos_char = <SID>CurChar()
-  if ! (pos_char =~ '['.opening.']')
-    " Jumped into a new match
-    call setpos('.', pos_save)
-  endif
 
+  normal [%
   let rightup_p = getpos('.')
   if rightup_p == rightup_before
-    silent! normal! [(
-    let rightup_p = getpos('.')
-    if rightup_p == rightup_before
-      return []
-    endif
+    return []
   endif
   while rightup_p != rightup_before
     if ! g:argumentobject_force_toplevel
@@ -78,7 +29,7 @@ function! s:GetOuterFunctionParenthesis()
       break
     endif
     let rightup_before = rightup_p
-    silent! normal! [(
+    normal [%
     let rightup_p = getpos('.')
   endwhile
 
@@ -175,9 +126,6 @@ function! argtextobj#MotionArgument(inner, visual)
   if current_c==','
     normal! l
   endif
-
-  " get out of "double quoted string" because [( does not take effect in it
-  call <SID>GetOutOfDoubleQuote()
 
   let rightup      = <SID>GetOuterFunctionParenthesis()       " on (
   if empty(rightup)
