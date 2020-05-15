@@ -1,12 +1,16 @@
+function! s:CurChar()
+    return getline('.')[getpos('.')[2] - 1]
+endfunction
+
 function! s:GetOutOfDoubleQuote()
-  " get out of double quoteed string (one letter before the beginning)
+  " get out of double quoted string (one letter before the beginning)
   let line = getline('.')
   let pos_save = getpos('.')
   let mark_b = getpos("'<")
   let mark_e = getpos("'>")
   let repl='_'
   let did_modify = 0
-  if getline('.')[getpos('.')[2]-1]=='_'
+  if <SID>CurChar()=='_'
     let repl='?'
   endif
 
@@ -21,7 +25,7 @@ function! s:GetOutOfDoubleQuote()
   endwhile
 
   call setpos('.', pos_save)
-  if getline('.')[getpos('.')[2]-1]==repl
+  if <SID>CurChar()==repl
     " in double quote
     if did_modify
       silent undo
@@ -42,7 +46,7 @@ function! s:GetOuterFunctionParenthesis()
   let pos_save = getpos('.')
   let rightup_before = pos_save
 
-  let pos_char = getline('.')[pos_save[2]] 
+  let pos_char = <SID>CurChar()
   let split = split(&matchpairs, ':')[1:]
   let closing = split[-1]
   let split = split[:-1]
@@ -136,7 +140,7 @@ endfunction
 function! s:MoveToNextNonSpace()
   let oldp = getpos('.')
   let moved = 0
-  while getline('.')[getpos('.')[2]-1]=~'\s'
+  while <SID>CurChar()=~'\s'
     normal! l
     if oldp == getpos('.')
       break
@@ -163,7 +167,7 @@ function! argtextobj#MotionArgument(inner, visual)
   let cnt = v:count1
   let operator = v:operator
   let pos_save = getpos('.')
-  let current_c = getline('.')[pos_save[2]-1]
+  let current_c = <SID>CurChar()
   if current_c==',' || current_c=='('
     normal! l
   endif
