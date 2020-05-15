@@ -17,12 +17,15 @@ function! s:GetOutOfDoubleQuote()
   while 1
     exe 'silent! normal! ^va"'
     normal! :\<ESC>\<CR>
+    echo pos_save getpos('.') getpos("'<") getpos("'>") "did_modify: ".did_modify
+    echo "test"
     if getpos("'<")==getpos("'>")
       break
     endif
     exe 'normal! gvr' . repl
     let did_modify = 1
   endwhile
+  echo did_modify
 
   call setpos('.', pos_save)
   if <SID>CurChar()==repl
@@ -31,6 +34,7 @@ function! s:GetOutOfDoubleQuote()
       silent undo
       call setpos('.', pos_save)
     endif
+    echo "In Double Quote!"
     if getpos('.')==getpos("'<")
       normal! h
     else
