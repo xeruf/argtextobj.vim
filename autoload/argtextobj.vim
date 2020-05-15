@@ -46,18 +46,25 @@ function! s:GetOuterFunctionParenthesis()
   let pos_save = getpos('.')
   let rightup_before = pos_save
 
-  let pos_char = <SID>CurChar()
-  let split = split(&matchpairs, ':')[1:]
-  let closing = split[-1]
-  let split = split[:-1]
+  let split = split(&matchpairs, ':')[:-2]
+  let [opening; split] = split
   for sp in split
-    let closing = closing.split(sp, ',')[0]
+    let opening = opening.split(sp, ',')[1]
   endfor
-  echo closing
 
- silent! normal! %
-  if ! pos_char =~ '['.closing.']'
+  let pos_char = <SID>CurChar()
+  if pos_char =~ '['.opening.']'
+    normal! l
+    return pos_save
+  endif
+  silent! normal! %
+  let pos_char = <SID>CurChar()
+  if ! (pos_char =~ '['.opening.']')
     silent! normal! %
+  endif
+  if getpos('.')[2] > pos_save[2]
+    " Jumped into a new match
+    call setpos('.', pos_save)
   endif
 
   let rightup_p = getpos('.')
@@ -168,7 +175,7 @@ function! argtextobj#MotionArgument(inner, visual)
   let operator = v:operator
   let pos_save = getpos('.')
   let current_c = <SID>CurChar()
-  if current_c==',' || current_c=='('
+  if current_c==','
     normal! l
   endif
 
