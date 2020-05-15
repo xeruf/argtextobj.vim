@@ -60,9 +60,6 @@ function! s:GetOuterFunctionParenthesis()
   silent! normal! %
   let pos_char = <SID>CurChar()
   if ! (pos_char =~ '['.opening.']')
-    silent! normal! %
-  endif
-  if getpos('.')[2] > pos_save[2]
     " Jumped into a new match
     call setpos('.', pos_save)
   endif
