@@ -1,15 +1,16 @@
-This is a mirror of http://www.vim.org/scripts/script.php?script_id=2699
+# argtextobj.vim
 
-This plugin provides a text-object 'a' (argument). You can
-d(elete), c(hange), v(select)... an argument or inner argument in familiar ways.
-That is, such as 'daa'(delete-an-argument) 'cia'(change-inner-argument) 'via'(select-inner-argument).
-What this script does is more than just typing
-  F,dt,
-because it recognizes inclusion relationship of parentheses.
+This is an improved fork of http://www.vim.org/scripts/script.php?script_id=2699
 
-There is an option to descide whether the motion should go out to toplevel function or not in nested function application.
+This plugin provides a text-object `a`(argument).
+You can d(elete), c(hange), v(select)... an argument or inner argument in familiar ways,
+such as `daa`(delete-an-argument) `cia`(change-inner-argument) `via`(select-inner-argument).  
+What this plugin does is more than simply typing `F,dt,` because it recognizes the inclusion relationship of parentheses.
 
-Examples:
+There is an option to decide whether the motion should go out to toplevel function or not in nested function application.
+
+## Examples
+```
   case1) delete An argument
       function(int arg1,    ch<press 'daa' here>ar* arg2="a,b,c(d,e)")
       function(int arg1<cursor here; and if you press 'daa' again..>)
@@ -32,4 +33,4 @@ Examples:
        
        function(1, (20*30)+40, somefunc2(<press 'cia' here>3, 4))
        function(1, (20*30)+40, <cursor here>) " sub-level function is deleted because it is a argument in terms of the outer function.
-
+```
