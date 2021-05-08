@@ -2,6 +2,11 @@
 
 This is an improved fork of http://www.vim.org/scripts/script.php?script_id=2699
 
+## Changes in this version
+- consider any parenthesis pair from `matchpairs`
+- support multi-line argument lists
+
+## Overview
 This plugin provides a text-object `a`(argument).
 You can d(elete), c(hange), v(select)... an argument or inner argument in familiar ways,
 such as `daa`(delete-an-argument) `cia`(change-inner-argument) `via`(select-inner-argument).  
